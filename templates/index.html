@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h1>Test job for BENOVATE</h1>
+    <div>
+        <form id="form" action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Отправить">
+        </form>
+    </div>
+    
+    <hr>
+
+    <div>{{op_result}}</div>
+
+{% endblock %}
