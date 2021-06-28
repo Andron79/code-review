@@ -12,8 +12,8 @@ router.register(r'profile', UserProfileSet, basename='profile')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.TransferView.as_view()),
     path('__debug__/', include(debug_toolbar.urls)),
+    path('', views.TransferView.as_view()),
     path('api-auth/', include('rest_framework.urls')),
 ]
 urlpatterns += router.urls
