@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from decimal import Decimal
 
+from django.db.models import F
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
@@ -29,17 +31,11 @@ class UserProfile(models.Model):
         return self.inn
 
     @staticmethod
-    def transfer_money(payer, transfer_amount, recipients):
-        payer = UserProfile.objects.get(inn=payer)
-        transfer_amount = Decimal(transfer_amount)
-        if payer.balance >= transfer_amount:
-            transfer_sum = (round(transfer_amount / len(recipients), 2))
-            user_balance = payer.balance - transfer_amount
-            UserProfile.objects.select_related().filter(inn=payer).update(balance=user_balance)
-            for recipient in recipients:
-                recipient_obj = UserProfile.objects.get(inn=recipient)
-                balance = recipient_obj.balance + transfer_sum
-                UserProfile.objects.select_related().filter(inn=recipient).update(balance=balance)
+    def transfer_money(**kwargs):
+        if Decimal(kwargs['transfer_amount']) <= UserProfile.objects.get(inn=kwargs['payer']).balance:
+            transfer_sum = (round(Decimal(kwargs['transfer_amount']) / len(kwargs['recipients']), 2))
+            UserProfile.objects.filter(inn=kwargs['payer']).update(balance=F('balance') - kwargs['transfer_amount'])
+            UserProfile.objects.filter(inn__in=kwargs['recipients']).update(balance=F('balance') + transfer_sum)
             msg = 'Перевод выполнен успешно!'
         else:
             msg = 'Перевод не выполнен! Сумма перевода превышает остаток на счете.'

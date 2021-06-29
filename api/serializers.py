@@ -20,9 +20,8 @@ class TransferSerializer(serializers.Serializer):
     )
 
     def validate_recipients(self, value):
-        recipients_list = value
-        if len(recipients_list) == len(set(recipients_list)):
-            for item in recipients_list:
+        if len(value) == len(set(value)):
+            for item in value:
                 if not item.isdigit() or len(item) != 12:
                     msg = f'Ошибка валидации ИНН (ИНН должен быть из 12 цифр, по одному ИНН в каждой строке, ' \
                           f'без знаков препинания. Ошибка в: {item}'

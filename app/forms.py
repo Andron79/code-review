@@ -23,7 +23,10 @@ class TransferForm(forms.Form):
         recipients = self.cleaned_data['recipients']
         payer = self.cleaned_data['payer']
         recipients_list = list(recipients.split())
-        if len(recipients_list) == len(set(recipients_list)):
+        if len(recipients_list) != len(set(recipients_list)):
+            msg = f'Дубликат ИНН!'
+            self.add_error('recipients', msg)
+        else:
             for item in recipients_list:
                 if not item.isdigit() or len(item) != 12:
                     msg = f'Ошибка валидации ИНН (ИНН должен быть из 12 цифр, по одному ИНН в каждой строке, ' \
@@ -35,8 +38,4 @@ class TransferForm(forms.Form):
                 if str(payer) == item:
                     msg = f'Самому себе нельзя переводить. Ошибка в: {item}'
                     self.add_error('recipients', msg)
-        else:
-            msg = f'Дубликат ИНН!'
-            self.add_error('recipients', msg)
-
         return recipients_list

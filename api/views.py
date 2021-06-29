@@ -4,7 +4,6 @@ from rest_framework.viewsets import ModelViewSet
 
 from .serializers import TransferSerializer, UserProfileSerializer
 from app.models import UserProfile
-from decimal import Decimal
 
 
 class UserProfileSet(ModelViewSet):
@@ -19,9 +18,5 @@ class TransferViewSet(viewsets.ViewSet):
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            pay_status = UserProfile.transfer_money(
-                serializer.data['payer'],
-                Decimal(serializer.data['transfer_amount']),
-                serializer.data['recipients']
-            )
+            pay_status = UserProfile.transfer_money(**serializer.data)
         return Response(pay_status)
